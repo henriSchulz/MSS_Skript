@@ -1,0 +1,26 @@
+# ===================================================================
+# --- LaTeX-Hilfsdateien und Kompilierungs-Output ---
+# ===================================================================
+
+# Haupt-Output-Datei
+*.pdf
+
+# Log- und Hilfsdateien
+*.aux
+*.log
+*.lof
+*.lot
+*.out
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+
+# Bibliographie-Dateien (falls BibTeX/Biber genutzt wird)
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+
+# Andere
+_minted*

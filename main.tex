@@ -1,0 +1,83 @@
+\documentclass[
+    12pt, a4paper, 
+    headings=normal,
+    toc=totoc,       % Fügt das Inhaltsverzeichnis zum Inhaltsverzeichnis hinzu
+    listof=totoc     % Fügt das Abbildungs- (und Tabellen-) Verzeichnis zum Inhaltsverzeichnis hinzu
+]{scrreprt} % KOMA-Skript, 'report'-Klasse
+
+%========= GRUNDEINSTELLUNGEN =========
+\usepackage[utf8]{inputenc}       % Umlaute direkt eingeben (ä, ö, ü)
+\usepackage[T1]{fontenc}          % Wichtig für Schriftarten und Silbentrennung
+\usepackage[ngerman]{babel}       % Deutsche Sprache, neue Rechtschreibung
+\usepackage[parskip=half]{parskip}  % Abstände zwischen Absätzen statt Einzügen
+
+%========= LAYOUT & DESIGN =========
+\usepackage{geometry}             % Seitenränder anpassen
+\geometry{a4paper, top=25mm, left=25mm, right=25mm, bottom=30mm}
+\usepackage{fancyhdr}             % Für Kopf- und Fußzeilen
+\pagestyle{fancy}
+\fancyhf{}                        % Alle Kopf- und Fußzeilenfelder leeren
+\lhead{\nouppercase{\leftmark}}   % Kapitelname links oben
+\rfoot{\thepage}                  % Seitenzahl rechts unten
+\renewcommand{\headrulewidth}{0.4pt} % Eine feine Linie unter der Kopfzeile
+
+%========= PAKETE FÜR INHALTE =========
+\usepackage{amsmath, amssymb}     % Essenzielle Mathe-Pakete
+\usepackage{graphicx}             % Zum Einbinden von Bildern
+\usepackage{caption, subcaption}  % Für Bildunterschriften und Unter-Abbildungen
+\usepackage{float}                % Bessere Kontrolle über Bilder-Platzierung (mit [H])
+\usepackage[
+    colorlinks=true,
+    linkcolor=black,              % Inhaltsverzeichnis etc. schwarz
+    urlcolor=blue,                % URLs in blau
+    citecolor=black
+]{hyperref}                       % Klickbare Links und Inhaltsverzeichnis
+
+% --- HINWEIS: 'tocbibind' wurde entfernt ---
+% \usepackage{tocbibind} % Verursacht Warnungen mit KOMA-Script
+
+%========= PROJEKTSPEZIFISCHE EINSTELLUNGEN =========
+% Pfad, in dem die Bilder (assets) liegen
+\graphicspath{{assets/}}
+
+%========= TITELSEITE =========
+\title{Mikroelektronische Schaltungen und Systeme}
+\author{
+    Skriptum zur Vorlesung von \\
+    \vspace{0.4cm}
+    Prof. Dr.-Ing. Ahmet Cagri Ulusoy \\
+    Institut für Hochfrequenztechnik und Elektronik (IHE) \\
+    \vspace{0.4cm}
+     Prof. Dr.-Ing. Dr. h. c. Jürgen Becker \\
+    Institut für Technik der Informationsverarbeitung (ITIV) \\
+    \vspace{0.8cm}
+    Karlsruher Institut für Technologie (KIT)
+}
+\date{Wintersemester 2025/2026}
+
+
+%========= DOKUMENTENBEGINN =========
+\begin{document}
+
+% --- Titelseite erstellen ---
+\maketitle
+
+% --- Inhaltsverzeichnis ---
+\tableofcontents
+
+% --- Abbildungsverzeichnis ---
+\listoffigures
+\newpage
+
+% --- HINWEIS: \mainmatter wurde entfernt. ---
+% Es ist bei 'scrreprt' ohne 'frontmatter' nicht notwendig.
+
+% -----------------------------------------------------------------
+% --- HIER WERDEN DIE KAPITEL EINGEBUNDEN ---
+% -----------------------------------------------------------------
+
+
+\input{chapters/01-Einfuehrung_CMOS}
+
+
+\end{document}

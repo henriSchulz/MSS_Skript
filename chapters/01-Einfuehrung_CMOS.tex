@@ -1,0 +1,202 @@
+\chapter{Einführung und CMOS-Grundlagen}
+\label{chap:cmos_grundlagen}
+
+Dieses Kapitel legt die Grundlagen für die Analyse von CMOS-Schaltungen (Complementary Metal-Oxide-Semiconductor). Wir wiederholen die physikalische Struktur, die I-V-Charakteristiken (DC-Modell) und das Kleinsignalmodell von MOSFETs (Metal-Oxide-Semiconductor Field-Effect Transistors).
+
+\section{MOSFET-Struktur und Symbole}
+Ein MOSFET ist ein spannungsgesteuertes Bauelement. In der CMOS-Technologie werden zwei Typen verwendet: der n-Kanal-MOSFET (NMOS) und der p-Kanal-MOSFET (PMOS).
+
+\begin{itemize}
+    \item \textbf{NMOS:} Wird auf einem p-dotierten Substrat aufgebaut. Eine positive Spannung am Gate $(G)$ relativ zur Source $(S)$ zieht Elektronen an und bildet einen n-Kanal, der Strom zwischen Drain $(D)$ und Source $(S)$ leiten kann.
+    \item \textbf{PMOS:} Wird in einer n-dotierten Wanne (n-well) auf dem p-Substrat aufgebaut. Eine negative Spannung am Gate relativ zur Source (oder eine positive $V_{SG}$) bildet einen p-Kanal aus Löchern.
+\end{itemize}
+
+Für die Schaltungsanalyse in diesem Skriptum verwenden wir primär die Symbole, die den vierten Anschluss, das Bulk oder Substrat $(B)$, explizit zeigen (siehe Abb. \ref{fig:mosfet_symbole}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\textwidth]{mosfet_symbole.png}
+    \caption{Die in der Vorlesung primär verwendeten MOSFET-Symbole (NMOS links, PMOS rechts) mit explizitem Bulk-Anschluss (B).}
+    \label{fig:mosfet_symbole}
+\end{figure}
+
+Die fundamentalen physikalischen Dimensionen, die das Verhalten des Transistors bestimmen, sind die \textbf{Kanalweite (Width) W} und die \textbf{Kanallänge (Length) L}, wie in Abb. \ref{fig:mosfet_3d} und \ref{fig:cmos_querschnitt} dargestellt.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{mosfet_3d.png}
+        \caption{3D-Ansicht eines NMOS mit Kanalweite W und Kanallänge L.}
+        \label{fig:mosfet_3d}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{cmos_querschnitt.png}
+        \caption{Querschnitt einer CMOS-Struktur (NMOS \& PMOS).}
+        \label{fig:cmos_querschnitt}
+    \end{subfigure}
+    \caption{Physikalische Struktur und Dimensionen von MOSFETs.}
+\end{figure}
+
+
+\section{DC-Modell (I-V-Charakteristik)}
+Die Beziehung zwischen dem Drain-Strom $(I_D)$ und den Spannungen $(V_{GS}, V_{DS})$ wird durch die DC-Charakteristik beschrieben. Das Verhalten des Transistors wird primär durch die \textbf{Overdrive-Spannung (Übersteuerungsspannung)} $V_{ov}$ bestimmt:
+\begin{equation}
+    V_{ov} = V_{GS} - V_{TH}
+\end{equation}
+wobei $V_{TH}$ die Schwellspannung ist.
+
+\subsection{Betriebsbereiche eines NMOS}
+Ein MOSFET hat drei Hauptbetriebsbereiche (siehe Abb. \ref{fig:id_vds_kurve}):
+
+\begin{enumerate}
+    \item \textbf{Cut-off (Sperrbereich):} $V_{GS} < V_{TH}$. Es bildet sich kein Kanal. Es fließt (nahezu) kein Strom ($I_D \approx 0$).
+    
+    \item \textbf{Triode (Linearer Bereich):} $V_{GS} > V_{TH}$ und $V_{DS} < V_{ov}$. Der Kanal ist durchgehend gebildet. Der Strom $I_D$ hängt sowohl von $V_{GS}$ als auch von $V_{DS}$ ab:
+    \begin{equation}
+        I_D = \mu_n C_{ox} \frac{W}{L} \left[ (V_{GS} - V_{TH})V_{DS} - \frac{1}{2}V_{DS}^2 \right]
+    \end{equation}
+    Für sehr kleine $V_{DS}$ verhält sich der Transistor wie ein spannungsgesteuerter Widerstand $R_{on}$:
+    \begin{equation}
+        R_{on} \approx \frac{1}{\mu_n C_{ox} \frac{W}{L} (V_{GS} - V_{TH})} = \frac{1}{\mu_n C_{ox} \frac{W}{L} V_{ov}}
+    \end{equation}
+   
+    \item \textbf{Saturation (Sättigungsbereich):} $V_{GS} > V_{TH}$ und $V_{DS} \ge V_{ov}$. Der Kanal ist am Drain-Ende "abgeschnürt" (Pinch-off). Der Strom ist (idealisiert) unabhängig von $V_{DS}$ und wird nur von $V_{GS}$ gesteuert. Diese "Square-Law"-Gleichung ist fundamental für Verstärker:
+    \begin{equation}
+        I_D = \frac{1}{2} \mu_n C_{ox} \frac{W}{L} (V_{GS} - V_{TH})^2 = \frac{1}{2} \mu_n C_{ox} \frac{W}{L} V_{ov}^2
+    \end{equation}
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{id_vds_kurve.png}
+    \caption{Die $I_D-V_{DS}$-Kennlinie eines NMOS. Sie zeigt die drei Betriebsbereiche Cutoff, Triode und Saturation.}
+    \label{fig:id_vds_kurve}
+\end{figure}
+
+\subsection{Kanal-Längen-Modulation (CLM)}
+In der Realität ist der Strom in der Sättigung nicht perfekt konstant. Steigt $V_{DS}$ weiter an, verkürzt sich die effektive Kanallänge $L_{eff}$. Das Modell wird um den CLM-Koeffizienten $\lambda$ erweitert:
+\begin{equation}
+    I_D \approx \frac{1}{2}\mu_{n}C_{ox}\frac{W}{L}(V_{GS}-V_{TH})^{2}(1+\lambda V_{DS})
+\end{equation}
+
+\section{Schwellspannung und Sub-Threshold}
+Die Schwellspannung $V_{TH}$ ist die minimale Gate-Spannung, die zur Bildung des Kanals (starke Inversion) nötig ist.
+
+\subsection{Physikalische Definition}
+Die Schwellspannung bei $V_{SB}=0$ ($V_{TH0}$) hängt von der Flat-Band-Spannung $V_{FB}$, dem Oberflächenpotential $\phi_F$ und der Ladung $Q_{dep}$ in der Verarmungszone ab:
+\begin{equation}
+    V_{TH0} = V_{FB} + 2\phi_{F} + \frac{Q_{dep}}{C_{ox}}
+\end{equation}
+
+\subsection{Der Body-Effekt}
+Wenn die Source-Bulk-Spannung $V_{SB} > 0$ ist (d.h. das Substrat auf einem niedrigeren Potential als die Source liegt), verbreitert sich die Verarmungszone (siehe Abb. \ref{fig:body_effect_viz}). Dies erhöht die Schwellspannung $V_{TH}$.
+\begin{equation}
+    V_{TH} = V_{TH0} + \gamma \left( \sqrt{|2\phi_{F} + V_{SB}|} - \sqrt{|2\phi_{F}|} \right)
+\end{equation}
+wobei $\gamma$ der Body-Effekt-Koeffizient ist.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{body_effect_viz.png}
+    \caption{Visualisierung des Body-Effekts: Eine negative Substratspannung ($V_B < 0$) vergrößert die Verarmungszone, was $V_{TH}$ erhöht.}
+    \label{fig:body_effect_viz}
+\end{figure}
+
+\subsection{Inversionsbereiche (I_D-V_GS)}
+Die $I_D-V_{GS}$-Kurve (logarithmisch) zeigt drei Bereiche:
+\begin{itemize}
+    \item \textbf{Weak Inversion (Schwache Inversion):} $V_{GS} < V_{TH}$. Auch "Sub-Threshold-Bereich". Der Strom ist nicht null, sondern folgt einem exponentiellen Verlauf: $I_D \propto e^{V_{GS}}$.
+    \item \textbf{Moderate Inversion (Mäßige Inversion):} $V_{GS} \approx V_{TH}$. Ein schwer zu modellierender Übergangsbereich.
+    \item \textbf{Strong Inversion (Starke Inversion):} $V_{GS} > V_{TH}$. Der Transistor folgt dem bekannten quadratischen "Square-Law"-Modell: $I_D \propto (V_{GS}-V_{TH})^2$.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{inversion_regions.png}
+    \caption{$I_D-V_{GS}$ Kurve (logarithmische y-Achse), die die Bereiche Weak, Moderate und Strong Inversion zeigt.}
+    \label{fig:inversion_regions}
+\end{figure}
+
+\section{Kleinsignalmodell (Small-Signal Model)}
+Für die Analyse von Verstärkern wird der Transistor in einem DC-Arbeitspunkt (Bias-Punkt) in der Sättigung betrieben. Für kleine AC-Signale um diesen Arbeitspunkt herum kann der Transistor als lineares Modell dargestellt werden.
+
+Das \textbf{grundlegendste Kleinsignalmodell} (siehe Abb. \ref{fig:ksb_basis}) besteht aus der Transkonduktanz $g_m$ und dem Ausgangswiderstand $r_o$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{ksb_basis.png}
+    \caption{Das grundlegende Kleinsignalmodell (KSB) für einen MOSFET in Sättigung.}
+    \label{fig:ksb_basis}
+\end{figure}
+
+\subsection{Transkonduktanz ($g_m$)}
+Die Transkonduktanz $g_m$ beschreibt, wie effektiv die Eingangsspannung $v_{gs}$ den Ausgangsstrom $i_d$ steuert.
+\begin{equation}
+    g_m = \frac{\partial I_D}{\partial V_{GS}} \bigg|_{V_{DS} = konst.}
+\end{equation}
+Aus der Sättigungsgleichung lassen sich drei äquivalente Formeln für $g_m$ ableiten:
+\begin{align}
+    g_m &= \mu_n C_{ox} \frac{W}{L} (V_{GS} - V_{TH}) = \mu_n C_{ox} \frac{W}{L} V_{ov} \\
+    g_m &= \sqrt{2 \mu_n C_{ox} \frac{W}{L} I_D} \\
+    g_m &= \frac{2 I_D}{V_{GS} - V_{TH}} = \frac{2 I_D}{V_{ov}}
+\end{align}
+
+\subsection{Ausgangswiderstand ($r_o$)}
+Der Ausgangswiderstand $r_o$ modelliert die Kanal-Längen-Modulation (CLM).
+\begin{equation}
+    r_o = \left( \frac{\partial I_D}{\partial V_{DS}} \right)^{-1} \approx \frac{1}{\lambda \cdot I_D}
+\end{equation}
+
+\subsection{Body-Transkonduktanz ($g_{mb}$)}
+Der Body-Effekt führt zu einer zweiten Transkonduktanz, $g_{mb}$, (auch $g_{bs}$ genannt), die die Stromänderung durch die Substratspannung $v_{bs}$ modelliert.
+\begin{equation}
+    g_{mb} = \frac{\partial I_D}{\partial V_{BS}} = \eta g_m
+\end{equation}
+wobei $\eta$ (eta) typischerweise zwischen 0.1 und 0.3 liegt.
+
+\subsection{Parasitäre Kapazitäten}
+Für Hochfrequenzanalysen muss das Modell um die internen Kapazitäten des MOSFETs erweitert werden.
+
+\begin{itemize}
+    \item \textbf{Gate-Kapazitäten (Oxid):} $C_{gs}$ (Gate-Source) und $C_{gd}$ (Gate-Drain). Sie hängen vom Betriebsbereich ab. In der \textbf{Sättigung} gilt:
+    \begin{align}
+        C_{gs} &= \frac{2}{3}WLC_{ox} + C_{ov} \\
+        C_{gd} &= C_{ov} \quad \text{(wobei } C_{ov} = W L_{ov} C_{ox} \text{ die Überlappkapazität ist)}
+    \end{align}
+    
+    \item \textbf{Junction-Kapazitäten (Sperrschicht):} $C_{sb}$ (Source-Bulk) und $C_{db}$ (Drain-Bulk). Dies sind spannungsabhängige Kapazitäten der Sperrschichten:
+    \begin{align}
+        C_{sb} &= \frac{C_{sb0}}{\sqrt{1+\frac{V_{SB}}{\phi_{0}}}} \\
+        C_{db} &= \frac{C_{db0}}{\sqrt{1+\frac{V_{DB}}{\phi_{0}}}}
+    \end{align}
+\end{itemize}
+
+Das \textbf{vollständige Kleinsignalmodell} (Abb. \ref{fig:ss_model_full}) beinhaltet alle DC- und AC-Komponenten. Für Berechnungen von Hand wird oft ein \textbf{vereinfachtes Hochfrequenzmodell} (Abb. \ref{fig:ksb_hf_simplified}) verwendet, das $g_{mb}$ und $C_{gb}$ vernachlässigt.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ss_model_full.png}
+        \caption{Das vollständige KSB mit Body-Effekt ($g_{mb}$) und allen Kapazitäten.}
+        \label{fig:ss_model_full}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{ksb_hf_simplified.png}
+        \caption{Vereinfachtes Hochfrequenz-KSB (Body-Effekt und $C_{gb}$ vernachlässigt).}
+        \label{fig:ksb_hf_simplified}
+    \end{subfigure}
+    \caption{Verschiedene Detaillierungsgrade des Kleinsignalmodells.}
+\end{figure}
+
+\section{MOSFET-Skalierung}
+Die treibende Kraft der Mikroelektronik ist das "Moore's Law", welches besagt, dass sich die Transistordichte auf einem Chip etwa alle zwei Jahre verdoppelt.
+\begin{itemize}
+    \item \textbf{Vorteile der Skalierung:} Kleinere Transistoren führen zu geringeren parasitären Kapazitäten und damit zu \textbf{höheren Geschwindigkeiten}. Gleichzeitig steigt die \textbf{Funktionalität} pro Chipfläche.
+    \item \textbf{Dennard-Skalierung:} Ein klassisches Skalierungsmodell, bei dem alle Dimensionen (W, L, $t_{ox}$), Spannungen ($V_{DD}$) und Dopingkonzentrationen ($N_A$) um einen Faktor $S$ skaliert werden, um die elektrischen Felder konstant zu halten.
+\end{itemize}
