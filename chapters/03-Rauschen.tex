@@ -1,0 +1,153 @@
+\chapter{Rauschen in Schaltungen}
+\label{chap:rauschen}
+
+Jede elektronische Schaltung erzeugt "Rauschen" – zufällige, unerwünschte Fluktuationen von Spannung oder Strom, die dem Nutzsignal überlagert werden. Dieses Rauschen begrenzt die minimal detektierbare Signalstärke und ist ein kritischer Faktor im Schaltungsentwurf.
+
+\section{Grundlagen und Definition}
+Da Rauschen ein stochastischer (zufälliger) Prozess ist, ist sein Momentanwert nicht vorhersagbar. Wir können es jedoch statistisch analysieren, indem wir seine \textbf{mittlere Leistung (Average Power)} betrachten, die vorhersagbar ist.
+
+Für die Schaltungsanalyse wird die Rauschleistung oft als mittlere quadratische Spannung ($V^2$) oder mittlerer quadratischer Strom ($A^2$) ausgedrückt.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{rauschen_signalweg.png}
+    \caption{Ein rauschfreies Sinussignal ($P_{signal}$) wird durch eine rauschbehaftete Schaltung ($P_{noise}$) korrumpiert.}
+    \label{fig:rauschen_signalweg}
+\end{figure}
+
+\subsection{Power Spectral Density (PSD)}
+Da die Rauschleistung über die Frequenz verteilt ist, ist das wichtigste Werkzeug zur Analyse die \textbf{Leistungsdichtespektrum (Power Spectral Density, PSD)}, bezeichnet als $S_n(f)$.
+\begin{itemize}
+    \item Die PSD beschreibt, wie sich die mittlere Rauschleistung auf die Frequenz $f$ verteilt.
+    \item Die Standardeinheit ist \textbf{$V^2/Hz$} (mittlere quadratische Spannung pro Hertz Bandbreite) oder $A^2/Hz$.
+    \item Oft wird auch die \textbf{Amplitudenspektraldichte} in $\mathbf{V/\sqrt{Hz}}$ verwendet, was die Wurzel aus der PSD ist.
+\end{itemize}
+Die \textbf{gesamte mittlere Rauschleistung} $P_n$ (als $V^2$ ausgedrückt) ist das Integral der PSD über die gesamte Bandbreite:
+\begin{equation}
+    P_n = \int_{0}^{\infty} S_n(f) df
+\end{equation}
+
+\subsection{Signal-to-Noise Ratio (SNR)}
+Das entscheidende Gütemaß einer Schaltung ist das Signal-Rausch-Verhältnis (SNR), das die Signalleistung ins Verhältnis zur Rauschleistung setzt:
+\begin{equation}
+    SNR = \frac{P_{signal}}{P_{noise}}
+\end{equation}
+Um das SNR zu maximieren, muss die Schaltungsbandbreite oft auf das für das Signal notwendige Minimum begrenzt werden.
+
+\section{Thermisches Rauschen (Wärmerauschen)}
+Wir fokussieren uns auf das Rauschen, das durch die Bauelemente selbst erzeugt wird (intrinsisches Rauschen), primär das \textbf{thermische Rauschen}.
+
+Thermisches Rauschen entsteht durch die zufällige Brown'sche Bewegung von Ladungsträgern (Elektronen) in einem leitfähigen Material (z.B. einem Widerstand). Es ist proportional zur absoluten Temperatur $T$.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.35\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{thermal_noise_v.png}
+        \caption{Spannungsquellenmodell}
+        \label{fig:thermal_noise_v}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.35\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{thermal_noise_i.png}
+        \caption{Stromquellenmodell}
+        \label{fig:thermal_noise_i}
+    \end{subfigure}
+    \caption{Modelle für thermisches Rauschen eines Widerstands R.}
+\end{figure}
+
+Es handelt sich um \textbf{weißes Rauschen}, d.h., seine PSD ist über die Frequenz konstant (flach).
+\begin{itemize}
+    \item \textbf{Spannungs-PSD:} $\overline{v_n^2} = 4kTR \quad [V^2/Hz]$
+    \item \textbf{Strom-PSD:} $\overline{i_n^2} = \frac{4kT}{R} \quad [A^2/Hz]$
+\end{itemize}
+wobei $k$ die Boltzmann-Konstante ($1.38 \times 10^{-23} J/K$) und $T$ die Temperatur in Kelvin ist.
+
+\subsection{Fallbeispiel: kT/C-Rauschen}
+Betrachtet man ein einfaches RC-Glied (Abb. \ref{fig:rc_glied_noise}), so erzeugt der Widerstand $R$ thermisches Rauschen $\overline{v_{n,R}^2} = 4kTR$. Am Ausgang $v_{out}$ wird dieses Rauschen durch den Tiefpassfilter (gebildet aus R und C) gefiltert.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{rc_glied_noise.png}
+    \caption{Rauschanalyse eines RC-Tiefpassfilters.}
+    \label{fig:rc_glied_noise}
+\end{figure}
+
+Die PSD am Ausgang ist das Rauschen der Quelle, multipliziert mit dem Betragsquadrat der Übertragungsfunktion $|H(f)|^2$:
+\begin{equation}
+    \overline{v_{out}^2}(f) = \overline{v_{n,R}^2} \cdot \left| \frac{1}{1+j\omega RC} \right|^2 = \frac{4kTR}{1+(2\pi f RC)^2}
+\end{equation}
+Integriert man diese PSD von $f=0$ bis $\infty$, erhält man die \textbf{gesamte integrierte Rauschleistung} am Ausgang:
+\begin{equation}
+    P_{n_{out}} = \int_{0}^{\infty} \frac{4kTR}{1+(2\pi f RC)^2} df = \frac{kT}{C}
+\end{equation}
+Dies ist ein fundamentales Ergebnis: Die \textbf{gesamte Rauschleistung} am Kondensator hängt \textbf{nicht vom Widerstand $R$} ab, sondern nur von der Temperatur $T$ und der Kapazität $C$.
+
+\section{Rauschen im MOSFET}
+Ein MOSFET erzeugt thermisches Rauschen. Der Kanal des MOSFETs verhält sich wie ein Widerstand und erzeugt dieses Rauschen. Im Sättigungsbereich wird dies als Rauschstromquelle zwischen Drain und Source modelliert (Abb. \ref{fig:mosfet_thermal_noise}).
+
+\begin{equation}
+    \overline{i_{n,th}^{2}} = 4kT\gamma g_m \quad [A^2/Hz]
+\end{equation}
+wobei $g_m$ die Transkonduktanz ist und $\gamma$ der "Excess Noise Coefficient", der für Langkanal-Transistoren oft als $2/3$ angenähert wird.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{mosfet_thermal_noise.png}
+    \caption{Thermisches Rauschmodell für einen MOSFET in Sättigung.}
+    \label{fig:mosfet_thermal_noise}
+\end{figure}
+
+\section{Rauschanalyse in Schaltungen}
+Da Rauschquellen unkorreliert sind, addieren sich ihre \textbf{Leistungen} (nicht ihre Spannungen oder Ströme). Zur Analyse wird das Superpositionsprinzip angewendet:
+1. Jede Rauschquelle wird einzeln betrachtet (alle anderen Quellen werden deaktiviert).
+2. Der Rauschbeitrag (Leistung, z.B. $v_{n,out,i}^2$) jeder Quelle am Ausgang wird berechnet.
+3. Die Gesamt-Rauschleistung am Ausgang ist die Summe aller einzelnen Rauschleistungen: $\overline{v_{n,out,total}^2} = \sum_i \overline{v_{n,out,i}^2}$.
+
+\subsection{Output-Referred vs. Input-Referred Noise}
+\begin{itemize}
+    \item \textbf{Output-Referred Noise (Ausgangsbezogenes Rauschen):} $\overline{v_{n,out}^2}$. Die gesamte Rauschleistung, die direkt am Ausgang der Schaltung gemessen wird. Es ist abhängig von der Verstärkung.
+    \item \textbf{Input-Referred Noise (Eingangsbezogenes Rauschen):} $\overline{v_{n,in}^2}$. Dies ist das (fiktive) Rauschen, das man am Eingang anlegen müsste, um bei einer rauschfreien Schaltung das gemessene Ausgangsrauschen $\overline{v_{n,out}^2}$ zu erzeugen.
+\end{itemize}
+Die Umrechnung erfolgt über die Spannungsverstärkung $A_v$ der Schaltung (Abb. \ref{fig:input_referred_noise}):
+\begin{equation}
+    \overline{v_{n,in}^{2}} = \frac{\overline{v_{n,out}^{2}}}{|A_v|^2}
+\end{equation}
+Der Vorteil des eingangsbezogenen Rauschens ist, dass es \textbf{unabhängig von der Verstärkung} ist und somit einen fairen Vergleich verschiedener Verstärkerstufen ermöglicht.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=1.0\textwidth]{input_referred_noise.png}
+    \caption{Konzept des ausgangs- und eingangsbezogenen Rauschens für einen Verstärker.}
+    \label{fig:input_referred_noise}
+\end{figure}
+
+\subsection{Beispiel: Rauschanalyse der CS-Stufe}
+Wir analysieren die CS-Stufe aus Kap. 2 (Abb. \ref{fig:cs_stufe_noise_calc}) und betrachten nur das thermische Rauschen.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{cs_stufe_noise_calc.png}
+    \caption{Rauschanalyse einer CS-Stufe mit den Rauschquellen von M1 und $R_D$.}
+    \label{fig:cs_stufe_noise_calc}
+\end{figure}
+
+Es gibt zwei Rauschquellen:
+1. Transistor M1: $\overline{i_{n,M1}^{2}} = 4kT\gamma g_m$
+2. Lastwiderstand $R_D$: $\overline{i_{n,R_D}^{2}} = \frac{4kT}{R_D}$
+
+\textbf{1. Output-Referred Noise:}
+Beide Rauschströme fließen durch den Ausgangswiderstand $R_{out} \approx R_D$ (angenommen $r_o$ ist groß). Die Rauschleistungen addieren sich:
+\begin{equation}
+    \overline{v_{n,out}^{2}} = (\overline{i_{n,M1}^{2}} + \overline{i_{n,R_D}^{2}}) \cdot R_D^2 = \left( 4kT\gamma g_m + \frac{4kT}{R_D} \right) R_D^2
+\end{equation}
+
+\textbf{2. Input-Referred Noise:}
+Wir teilen das Ausgangsrauschen durch das Quadrat der Verstärkung ($|A_v|^2 \approx (-g_m R_D)^2 = g_m^2 R_D^2$):
+\begin{equation}
+    \overline{v_{n,in}^{2}} = \frac{\overline{v_{n,out}^{2}}}{|A_v|^2} = \frac{(4kT\gamma g_m + \frac{4kT}{R_D}) R_D^2}{g_m^2 R_D^2}
+\end{equation}
+\begin{equation}
+    \overline{v_{n,in}^{2}} = \frac{4kT\gamma g_m}{g_m^2} + \frac{4kT/R_D}{g_m^2} = 4kT\left( \frac{\gamma}{g_m} + \frac{1}{g_m^2 R_D} \right)
+\end{equation}
+Man erkennt, dass der Rauschbeitrag des Transistors (der $1/g_m$-Term) oft dominiert. Um das Rauschen zu verringern, muss $g_m$ erhöht werden.

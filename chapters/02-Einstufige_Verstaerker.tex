@@ -1,0 +1,219 @@
+\chapter{Einstufige Verstärker}
+\label{chap:einstufige_verstaerker}
+
+Einstufige Verstärker sind die fundamentalen Bausteine für komplexere analoge Schaltungen. In diesem Kapitel analysieren wir die vier Grundkonfigurationen: die Common-Source (CS) Stufe, den Source-Folger (SF), die Common-Gate (CG) Stufe und die Kaskode-Stufe.
+
+\section{Common-Source-Verstärker (CS-Stufe)}
+Die Common-Source-Stufe ist der am häufigsten verwendete Verstärker. Das Eingangssignal wird an das Gate angelegt, während das Ausgangssignal am Drain abgenommen wird. Die Source ist typischerweise mit einem festen Potential (z.B. Masse) verbunden.
+
+\subsection{CS-Stufe mit resistivem Last}
+Die einfachste Form der CS-Stufe verwendet einen ohmschen Widerstand $R_D$ als Last (siehe Abb. \ref{fig:cs_resistive_load}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{cs_resistive_load.png}
+    \caption{CS-Verstärker mit ohmscher Last (links) und zugehöriges Kleinsignalmodell (rechts).}
+    \label{fig:cs_resistive_load}
+\end{figure}
+
+Die Kleinsignalanalyse (mit $v_{in} = v_{gs}$) ergibt:
+\begin{itemize}
+    \item \textbf{Spannungsverstärkung ($A_v$):} Der Ausgang ist $v_{out} = -g_m v_{gs} (r_o || R_D)$.
+    \begin{equation}
+        A_v = \frac{v_{out}}{v_{in}} = -g_m (r_o || R_D) \approx -g_m R_D \quad (\text{für } r_o \gg R_D)
+    \end{equation}
+    Die Verstärkung ist invertierend.
+    
+    \item \textbf{Eingangswiderstand ($R_{in}$):} Der Eingangswiderstand (Blick in das Gate) ist idealerweise unendlich.
+    \begin{equation}
+        R_{in} = \infty
+    \end{equation}
+    
+    \item \textbf{Ausgangswiderstand ($R_{out}$):} Der Ausgangswiderstand (Blick in den Drain) ist die Parallelschaltung von $r_o$ und $R_D$.
+    \begin{equation}
+        R_{out} = r_o || R_D
+    \end{equation}
+\end{itemize}
+
+\subsection{CS-Stufe mit Diode-Connected Last}
+In CMOS-Prozessen sind präzise Widerstände flächenintensiv. Stattdessen wird die Last oft durch einen anderen MOSFET (M2) realisiert, der als "Diode-Connected" (Gate mit Drain verbunden) beschaltet ist (Abb. \ref{fig:cs_diode_load}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{cs_diode_load.png}
+    \caption{CS-Stufe mit Diode-Connected PMOS-Last (links) und Kleinsignalmodell (rechts).}
+    \label{fig:cs_diode_load}
+\end{figure}
+
+Der Diode-Connected Transistor M2 verhält sich wie ein kleiner Widerstand $r_{x2}$. Aus der Kleinsignalanalyse (unter Berücksichtigung des Body-Effekts $g_{mb2}$) ergibt sich dessen Widerstand zu:
+\begin{equation}
+    r_{x2} = \frac{1}{g_{m2} + g_{mb2}} \approx \frac{1}{g_{m2}(1+\eta)}
+\end{equation}
+Die Gesamtverstärkung ist die Transkonduktanz des Treibers (M1) multipliziert mit dem Gesamtausgangswiderstand ($R_{out} = r_{o1} || r_{o2} || r_{x2}$). Da $r_{x2}$ sehr klein ist, dominiert dieser Term:
+\begin{equation}
+    A_v = -g_{m1} (r_{o1} || r_{o2} || \frac{1}{g_{m2} + g_{mb2}}) \approx -\frac{g_{m1}}{g_{m2} + g_{mb2}}
+\end{equation}
+Unter der Annahme $I_{D1}=I_{D2}$ kann die Verstärkung über die Transistorgeometrien eingestellt werden:
+\begin{equation}
+    A_v \approx -\frac{\sqrt{\mu_n (W/L)_1}}{\sqrt{\mu_p (W/L)_2}} \cdot \frac{1}{1+\eta}
+\end{equation}
+
+    \subsection{CS-Stufe mit Stromquellen-Last (Current-Source Load)}
+    Um eine höhere Verstärkung zu erzielen, wird eine Last mit hohem Widerstand benötigt. Dies wird durch eine Stromquelle realisiert (Abb. \ref{fig:cs_current_load}), die im Kleinsignalmodell idealerweise einen unendlichen, real jedoch einen Widerstand von $r_{o2}$ besitzt.
+
+    \begin{figure}[H]
+        \centering
+        \includegraphics[width=0.4\textwidth]{cs_current_load.png}
+        \caption{CS-Verstärker mit PMOS-Stromquellen-Last.}
+        \label{fig:cs_current_load}
+    \end{figure}
+
+    Die Verstärkung wird durch den parallelen Ausgangswiderstand beider Transistoren bestimmt:
+    \begin{equation}
+        A_v = -g_{m1} (r_{o1} || r_{o2})
+    \end{equation}
+    Dies ist die sogenannte \textbf{Eigenverstärkung (Intrinsic Gain)} und stellt die maximal erreichbare Verstärkung einer einzelnen CS-Stufe dar.
+
+\subsection{CS-Stufe mit Source-Degeneration}
+Ein Widerstand $R_S$ zwischen Source und Masse (Abb. \ref{fig:cs_degeneration}) führt zu einer Gegenkopplung (Negative Feedback).
+\begin{itemize}
+    \item \textbf{Vorteil:} Verbessert die Linearität des Verstärkers.
+    \item \textbf{Nachteil:} Reduziert die effektive Transkonduktanz und damit die Verstärkung.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\textwidth]{cs_degeneration.png}
+    \caption{CS-Stufe mit Source-Degeneration (links) und Kleinsignalmodell (rechts).}
+    \label{fig:cs_degeneration}
+\end{figure}
+
+Die effektive Transkonduktanz (unter Vernachlässigung von $r_o$ und $g_{mb}$) sinkt auf:
+\begin{equation}
+    g_{m,eff} = \frac{g_{m1}}{1 + g_{m1} R_S}
+\end{equation}
+Der Ausgangswiderstand $R_{out}$ (Blick in den Drain) wird durch die Degeneration stark erhöht (geboostet):
+\begin{equation}
+    R_{out} \approx [1 + (g_{m1} + g_{mb1})R_S] r_{o1} + R_S \approx (1 + g_{m1} R_S) r_{o1}
+\end{equation}
+Die Gesamtverstärkung (mit $R_D$) ist:
+\begin{equation}
+    A_v = -\frac{g_{m1}(R_D || r_{o,degen})}{1+g_{m1}R_S} \approx -\frac{g_{m1}R_D}{1+g_{m1}R_S}
+\end{equation}
+
+\section{Source-Folger (Common-Drain-Stufe)}
+Der Source-Folger (SF) oder Common-Drain (CD) Verstärker wird als \textbf{Buffer} (Spannungspuffer) eingesetzt. Das Eingangssignal liegt am Gate, das Ausgangssignal wird an der Source abgenommen (Abb. \ref{fig:sf_basic}).
+
+Sein Zweck ist nicht die Spannungsverstärkung, sondern die Bereitstellung eines \textbf{niedrigen Ausgangswiderstands}, um nachfolgende niederohmige Lasten zu treiben.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{sf_basic.png}
+    \caption{Grundschaltung des Source-Folgers (Common-Drain).}
+    \label{fig:sf_basic}
+\end{figure}
+
+Die Kleinsignalanalyse (Abb. \ref{fig:sf_small_signal}) zeigt die Spannungsteilung zwischen der $g_m$-Quelle und der Last $R_S$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{sf_small_signal.png}
+    \caption{Kleinsignalmodell des Source-Folgers (links) und Kennlinie (rechts).}
+    \label{fig:sf_small_signal}
+\end{figure}
+
+\begin{itemize}
+    \item \textbf{Spannungsverstärkung ($A_v$):} Die Verstärkung ist nicht-invertierend und liegt nahe bei 1.
+    \begin{equation}
+        A_v = \frac{v_{out}}{v_{in}} = \frac{g_{m1} R_S}{1 + (g_{m1} + g_{mb1}) R_S}
+    \end{equation}
+    Für $g_m R_S \gg 1$ vereinfacht sich dies (mit $\eta = g_{mb}/g_m$) zu:
+    \begin{equation}
+        A_v \approx \frac{1}{1 + \eta} < 1
+    \end{equation}
+    Der Body-Effekt ($\eta > 0$) verhindert, dass die Verstärkung exakt 1 erreicht.
+    
+    \item \textbf{Ausgangswiderstand ($R_{out}$):} Der Ausgangswiderstand (Blick in die Source) ist sehr niedrig.
+    \begin{equation}
+        R_{out} = \frac{1}{g_{m1} + g_{mb1}} || r_{o1} \approx \frac{1}{g_{m1}(1+\eta)}
+    \end{equation}
+\end{itemize}
+
+\section{Common-Gate-Verstärker (CG-Stufe)}
+Bei der Common-Gate-Stufe (CG) liegt das Eingangssignal an der Source und das Ausgangssignal am Drain. Das Gate wird auf einer festen DC-Spannung gehalten (Abb. \ref{fig:cg_basic}).
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\textwidth]{cg_basic.png}
+    \caption{CG-Verstärker (links) und Kleinsignalmodell (rechts).}
+    \label{fig:cg_basic}
+\end{figure}
+
+Die CG-Stufe wird oft als Strompuffer oder in Hochfrequenz-Anwendungen (Kaskode) eingesetzt.
+\begin{itemize}
+    \item \textbf{Spannungsverstärkung ($A_v$):} Die Verstärkung ist nicht-invertierend. Der Body-Effekt \textit{erhöht} die effektive Transkonduktanz.
+    \begin{equation}
+        A_v = (g_{m1} + g_{mb1} + \frac{1}{r_{o1}})(R_D || r_{o1}) \approx (g_{m1} + g_{mb1}) R_D = g_{m1}(1+\eta)R_D
+    \end{equation}
+    
+    \item \textbf{Eingangswiderstand ($R_{in}$):} Der Eingangswiderstand (Blick in die Source) ist niedrig (identisch zu $R_{out}$ des Source-Folgers).
+    \begin{equation}
+        R_{in} = \frac{1}{g_{m1} + g_{mb1}} || r_{o1} \approx \frac{1}{g_{m1}(1+\eta)}
+    \end{equation}
+    
+    \item \textbf{Ausgangswiderstand ($R_{out}$):} Der Ausgangswiderstand (Blick in den Drain) ist hoch (identisch zu $R_{out}$ der CS-Stufe mit Degeneration).
+    \begin{equation}
+        R_{out} = R_D || \left( [1 + (g_{m1} + g_{mb1})R_{in,source}] r_{o1} + R_{in,source} \right)
+    \end{equation}
+    (Wobei $R_{in,source}$ der Widerstand der Signalquelle am Eingang ist).
+\end{itemize}
+
+\section{Kaskode-Verstärker}
+Die Kaskode-Stufe (Abb. \ref{fig:cascode_basic}) ist eine Kaskadierung einer CS-Stufe (M1) und einer CG-Stufe (M2). M1 agiert als Transkonduktanz-Stufe, M2 als Strompuffer, der die Ausgangsspannung von M1 "abschirmt".
+
+\begin{itemize}
+    \item \textbf{Vorteil:} Sehr hohe Verstärkung und Ausgangswiderstand sowie exzellente Hochfrequenz-Eigenschaften (Unterdrückung des Miller-Effekts).
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{cascode_basic.png}
+    \caption{Grundschaltung des Kaskode-Verstärkers.}
+    \label{fig:cascode_basic}
+\end{figure}
+
+Der entscheidende Vorteil ist der extrem hohe Ausgangswiderstand $R_{out}$ (Blick in den Drain von M2), der durch die CG-Stufe M2 geboostet wird:
+\begin{equation}
+    R_{out} = (1 + (g_{m2} + g_{mb2}) r_{o1}) r_{o2} + r_{o1} \approx g_{m2} r_{o2} \cdot r_{o1}
+\end{equation}
+Der Ausgangswiderstand wird um den Faktor der Eigenverstärkung ($g_{m2}r_{o2}$) des oberen Transistors erhöht.
+
+Die Gesamtverstärkung $A_v$ ist die Transkonduktanz der CS-Stufe (M1) multipliziert mit dem gesamten Ausgangswiderstand:
+\begin{equation}
+    A_v = -g_{m1} (R_{out} || R_D) \approx -g_{m1} (g_{m2} r_{o1} r_{o2} || R_D)
+\end{equation}
+Mit einer Stromquellenlast (siehe Abb. \ref{fig:cascode_full_active}) wird die Verstärkung maximiert:
+\begin{equation}
+    A_v \approx -g_{m1} (R_{on} || R_{op})
+\end{equation}
+wobei $R_{on} \approx g_{m2}r_{o1}r_{o2}$ (NMOS-Kaskode) und $R_{op} \approx g_{m3}r_{o3}r_{o4}$ (PMOS-Kaskoden-Last). Die Verstärkung kann somit $(g_m r_o)^2$ erreichen.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{cascode_full_active.png}
+    \caption{Kaskode-Verstärker mit aktiver Kaskoden-Last für maximale Verstärkung.}
+    \label{fig:cascode_full_active}
+\end{figure}
+
+\subsection{Folded Cascode (Gefaltete Kaskode)}
+Die gefaltete Kaskode (Abb. \ref{fig:cascode_folded}) nutzt einen PMOS-Transistor (M1) als Eingangsstufe, dessen Strom $g_{m1}v_{in}$ in eine NMOS-CG-Stufe (M2) "gefaltet" (umgeleitet) wird. Dies ermöglicht eine flexiblere Wahl der DC-Spannungspegel (Common-Mode-Bereich).
+\begin{equation}
+    A_v \approx -g_{m1} (R_{out,M2} || R_D) \approx -g_{m1} (g_{m2} r_{o2} r_{o,M1} || R_D)
+\end{equation}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.4\textwidth]{cascode_folded.png}
+    \caption{Gefaltete Kaskode (Folded Cascode) mit PMOS-Eingang.}
+    \label{fig:cascode_folded}
+\end{figure}
